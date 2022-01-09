@@ -1,50 +1,17 @@
 import sqlite3
-
 from pathlib import Path
-import pandas
-from numpy import ndarray
-from docx import Document
-import pandas as pd
-from pandas import read_sql_query
 
-from helpers import dict_factory
+import pandas
+
+from helpers import dict_factory, calc_cagr, word_writer, NEW_FACTOR
+
 
 pandas.set_option("display.max_columns", 20)
 pandas.set_option("display.width", 500)
-NEW_FACTOR = 6
+
 con = sqlite3.connect("test.db")
 con.row_factory = dict_factory
 cur = con.cursor()
-
-
-def calc_cagr(dataframe: pandas.DataFrame) -> ndarray:
-    cagr = (
-        (
-            dataframe[dataframe.columns[-1:]].values[0]
-            / dataframe[NEW_FACTOR][2007].values[0]
-        )
-        ** (1 / len(dataframe[NEW_FACTOR].columns))
-        - 1
-    ) * 100
-
-    return cagr
-
-
-def word_writer(dataframe: pandas.DataFrame, path: Path, cagr: float):
-    document = Document()
-    table = document.add_table(dataframe.shape[0], dataframe.shape[1])
-    table.allow_autofit = True
-    table.autofit = True
-    for i, column in enumerate(dataframe):
-        for row in range(dataframe.shape[0]):
-            table.cell(row, i).text = str(dataframe[column][row])
-
-    dim = "grew" if cagr > 0 else "loss"
-    document.add_paragraph(
-        f"Factor 6 {dim} by avg {cagr} form 2017 to 2019"
-    )
-
-    document.save(path)
 
 
 def main():
@@ -68,11 +35,14 @@ def main():
         year["year"] for year in filter(lambda x: x["factor"] == 1, avg_output)
     ]:
         df[NEW_FACTOR, year] = df[2][year] / df[1][year]
+
+    df = df.round(2)
     df.to_excel("report.xlsx")
     cagr = calc_cagr(df)
 
-    new_factor_df = df[NEW_FACTOR]
-    word_writer(new_factor_df, "report.docx", float(cagr))
+    df = df.drop(columns=[1, 2])
+    df.to_excel("mid.xlsx")
+    word_writer(df, Path("report.docx"), float(cagr))
 
 
 if __name__ == "__main__":
