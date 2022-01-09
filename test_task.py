@@ -41,7 +41,6 @@ def main():
     cagr = calc_cagr(df)
 
     df = df.drop(columns=[1, 2])
-    df.to_excel("mid.xlsx")
     word_writer(df, Path("report.docx"), float(cagr))
 
 
