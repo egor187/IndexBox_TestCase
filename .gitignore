@@ -3,6 +3,10 @@
 # My notes
 notes.my
 
+# Output
+*.xlsx
+*.docx
+
 # Sqlite databases
 bot/db/
 *.db
