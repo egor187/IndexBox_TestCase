@@ -30,8 +30,9 @@ def calc_cagr(dataframe: pandas.DataFrame) -> ndarray:
 
 def word_writer(dataframe: pandas.DataFrame, path: Path, cagr: float):
     from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+
     document = Document()
-    table = document.add_table(dataframe.shape[1]+1, len(dataframe.columns.names)+1)
+    table = document.add_table(dataframe.shape[1] + 1, len(dataframe.columns.names) + 1)
     table.allow_autofit = True
     table.autofit = True
 
