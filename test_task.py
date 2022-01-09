@@ -9,8 +9,8 @@ from pandas import read_sql_query
 
 from helpers import dict_factory
 
-pandas.set_option("display.max_columns", 50)
-pandas.set_option("display.width", 1000)
+pandas.set_option("display.max_columns", 20)
+pandas.set_option("display.width", 500)
 NEW_FACTOR = 6
 con = sqlite3.connect("test.db")
 con.row_factory = dict_factory
@@ -63,7 +63,7 @@ def main():
             for elem in avg_output
         }
     )
-
+    df.columns.names = ["Factor", "Year"]
     for year in [
         year["year"] for year in filter(lambda x: x["factor"] == 1, avg_output)
     ]:
